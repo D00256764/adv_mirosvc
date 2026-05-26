@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafka
+  namespace: microsvc
+spec:
+  selector:
+    app: kafka
+  ports:
+    - name: tcp-kafka
+      port: 29092
+      targetPort: 29092

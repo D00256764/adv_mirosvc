@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: traffic-gen
+  namespace: microsvc
+spec:
+  restartPolicy: Never
+  containers:
+    - name: traffic-gen
+      image: curlimages/curl:8.5.0
+      command:
+        - /bin/sh
+        - -c
+        - |
+          for i in $(seq 1 50); do
+            curl -sf http://order-service:8000/health || echo order-health-fail
+            curl -sf -X POST http://order-service:8000/orders \
+              -H "Content-Type: application/json" \
+              -d '{"customer_id":"demo","items":[{"product_id":"p1","quantity":1,"price":9.99}]}' \
+              || echo order-post-fail
+            curl -sf http://inventory-service:8001/stock/p1 || echo inv-fail
+            curl -sf http://payment-service:8002/health || echo pay-fail
+            sleep 1
+          done
+          echo done
+          sleep 3600

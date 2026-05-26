@@ -1,0 +1,63 @@
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: deny-all
+  namespace: microsvc
+spec: {}
+---
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: allow-order-service
+  namespace: microsvc
+spec:
+  selector:
+    matchLabels:
+      app: order-service
+  action: ALLOW
+  rules:
+    - from:
+        - source:
+            namespaces: ["microsvc"]
+      to:
+        - operation:
+            methods: ["GET", "POST"]
+            paths: ["/orders*", "/health"]
+---
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: allow-inventory-service
+  namespace: microsvc
+spec:
+  selector:
+    matchLabels:
+      app: inventory-service
+  action: ALLOW
+  rules:
+    - from:
+        - source:
+            namespaces: ["microsvc"]
+      to:
+        - operation:
+            methods: ["GET"]
+            paths: ["/stock*", "/health"]
+---
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: allow-payment-service
+  namespace: microsvc
+spec:
+  selector:
+    matchLabels:
+      app: payment-service
+  action: ALLOW
+  rules:
+    - from:
+        - source:
+            namespaces: ["microsvc"]
+      to:
+        - operation:
+            methods: ["GET"]
+            paths: ["/payments*", "/health"]

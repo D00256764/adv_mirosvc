@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-order
+  namespace: microsvc
+spec:
+  selector:
+    app: redis-order
+  ports:
+    - port: 6379
+      targetPort: 6379

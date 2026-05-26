@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: microsvc-config
+  namespace: microsvc
+data:
+  KAFKA_BOOTSTRAP: "kafka:29092"
+  REDIS_URL_ORDER: "redis://redis-order:6379"
+  REDIS_URL_PAYMENT: "redis://redis-payment:6379"
+  REDIS_URL_INVENTORY: "redis://redis-inventory:6379"
+  redis.conf: |
+    appendonly yes
+    save 900 1
+    save 300 10
+    save 60 10000
+    maxclients 100
