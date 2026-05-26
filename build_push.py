@@ -12,7 +12,7 @@ def build_script(version="latest", build_env="prod"):
             subprocess.run(
                 [
                     "docker", "buildx", "build",
-                    "--platform", "linux/amd64",
+                    "--platform", "linux/arm64,linux/amd64",
                     "-t", tag,
                     "--push",
                     f"./{service}",

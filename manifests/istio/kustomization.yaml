@@ -1,0 +1,16 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: microsvc
+
+resources:
+  - peer-authentication.yaml
+  - authorization-policies.yaml
+  - destination-rules.yaml
+  - virtual-services.yaml
+  - order-service-v2.yaml
+  - rate-limit.yaml
+  - istio-gateway.yaml
+  - gateway-virtualservice.yaml
+  - telemetry.yaml
+

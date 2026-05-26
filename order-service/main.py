@@ -24,13 +24,36 @@ producer: AIOKafkaProducer
 _tasks: list[asyncio.Task] = []
 
 
+async def _start_kafka_producer(max_attempts: int = 30, delay_s: float = 5.0) -> AIOKafkaProducer:
+    last_error: Exception | None = None
+    for attempt in range(1, max_attempts + 1):
+        kafka = AIOKafkaProducer(bootstrap_servers=KAFKA_BOOTSTRAP)
+        try:
+            await kafka.start()
+            logger.info("Connected to Kafka at %s", KAFKA_BOOTSTRAP)
+            return kafka
+        except Exception as exc:
+            last_error = exc
+            logger.warning(
+                "Kafka not ready (attempt %s/%s): %s",
+                attempt,
+                max_attempts,
+                exc,
+            )
+            try:
+                await kafka.stop()
+            except Exception:
+                pass
+            await asyncio.sleep(delay_s)
+    raise RuntimeError(f"Could not connect to Kafka at {KAFKA_BOOTSTRAP}") from last_error
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     global redis, producer
 
     redis = Redis.from_url(REDIS_URL, decode_responses=False)
-    producer = AIOKafkaProducer(bootstrap_servers=KAFKA_BOOTSTRAP)
-    await producer.start()
+    producer = await _start_kafka_producer()
 
     _tasks.append(asyncio.create_task(run_outbox_publisher(redis, producer)))
     _tasks.append(asyncio.create_task(run_saga_listener(redis, KAFKA_BOOTSTRAP)))

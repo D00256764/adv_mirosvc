@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-inventory
+  namespace: microsvc
+spec:
+  selector:
+    app: redis-inventory
+  ports:
+    - port: 6379
+      targetPort: 6379

@@ -1,0 +1,21 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: inventory-service
+  namespace: microsvc
+spec:
+  hosts:
+    - inventory-service
+  http:
+    - fault:
+        delay:
+          percentage:
+            value: 10
+          fixedDelay: 5s
+        abort:
+          percentage:
+            value: 5
+          httpStatus: 503
+      route:
+        - destination:
+            host: inventory-service
